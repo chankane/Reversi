@@ -1,0 +1,57 @@
+from numpy.random import *
+import numpy as np
+import math
+
+
+def crossover(chromosome1, chromosome2):
+    # = fuck
+    start = randint(chromosome1.size)
+    end = randint(start, chromosome1.size + 1)
+    temp = chromosome1[start:end].copy()
+    chromosome1[start:end] = chromosome2[start:end]
+    chromosome2[start:end] = temp
+
+
+def evaluate(chromosome):
+    chromosome.fitness = np.average(chromosome)
+
+
+def select(population, rate):
+    for e in population:
+        evaluate(e)
+    index = math.ceil(population.size * rate)
+    population.sort(population, order="fitness")
+    np.delete(population, [range(index)])
+
+
+def generate_next_generation(population, capacity):
+    i = 0
+    while population.size < capacity:
+        crossover(population[i % population.size], population[(i + 1) % population.size])
+
+
+def display(generation, population):
+    print("--------------------------------")
+    print("generation: " + str(generation))
+    print("avg: " + str(np.average(population)) + "\n")
+
+
+def main():
+    chromosome_length = 10
+    population_size = 10
+    final_generation = 100
+    elite_rate = 0.2
+    generation = 0
+    dtype = [("fitness", int), ("data", bool)]
+    population = np.array([-1, [randint(2) for i in range(chromosome_length)] for j in range(population_size)],
+                          dtype=dtype)
+    print(population.dtype)
+    display(generation, population)
+
+    for i in range(final_generation):
+        select(population, elite_rate)
+        generate_next_generation(population, population_size)
+        display(generation, population)
+
+
+main()
