@@ -61,7 +61,7 @@ def main():
                                    stats=stats, halloffame=hof, verbose=True)
 
     return pop, log, hof
-    #return log, hof
+    # return log, hof
 
 
 if __name__ == "__main__":
