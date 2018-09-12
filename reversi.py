@@ -12,7 +12,7 @@ def init():
     if BLACK:
         return np.array([0x0000001008000000, 0x0000000810000000], dtype=np.uint64)
     else:
-        # return np.array([0x0000000000000000, 0x0000000000000000], dtype=np.uint64)
+        # return np.array([0xFFFFFFFFFFFFFFFF, 0x0000000000000000], dtype=np.uint64)
         return np.array([0x0000000810000000, 0x0000001008000000], dtype=np.uint64)
 
 
@@ -38,7 +38,7 @@ def is_finished(stones):
 
 
 def display(stones):
-    print("  A B C D E F G H")
+    print("\n  A B C D E F G H")
     for i in range(BOARD_SIZE * BOARD_SIZE):
         if not i % 8:
             print(i // 8 + 1, end=" ")
@@ -51,7 +51,30 @@ def display(stones):
         else:
             print(".", end=" ")
         if not shift_num % 8:
-            print()
+            print("")
+
+
+def show_result(stones):
+    b = count1(stones[BLACK])
+    w = count1(stones[WHITE])
+    print("\n-------- Game over --------")
+    print("Black: " + str(b))
+    print("White: " + str(w))
+    if b > w:
+        print("Black won")
+    elif b < w:
+        print("White won")
+    else:
+        print("Draw game")
+
+
+def count1(stone):
+    stone = (stone & np.uint64(0x5555555555555555)) + (stone >> np.uint64(1) & np.uint64(0x5555555555555555))
+    stone = (stone & np.uint64(0x3333333333333333)) + (stone >> np.uint64(2) & np.uint64(0x3333333333333333))
+    stone = (stone & np.uint64(0x0F0F0F0F0F0F0F0F)) + (stone >> np.uint64(4) & np.uint64(0x0F0F0F0F0F0F0F0F))
+    stone = (stone & np.uint64(0x00FF00FF00FF00FF)) + (stone >> np.uint64(8) & np.uint64(0x00FF00FF00FF00FF))
+    stone = (stone & np.uint64(0x0000FFFF0000FFFF)) + (stone >> np.uint64(16) & np.uint64(0x0000FFFF0000FFFF))
+    return (stone & np.uint64(0x00000000FFFFFFFF)) + (stone >> np.uint64(32) & np.uint64(0x00000000FFFFFFFF))
 
 
 def main():
@@ -62,6 +85,7 @@ def main():
             print("Invalid move...")
             continue
         display(stones)
+    show_result(stones)
 
 
 if __name__ == "__main__":
